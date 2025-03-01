@@ -1,0 +1,9 @@
+local NumTween = require(game.ReplicatedStorage.NumberTween)
+local myTween = NumTween.new(0, 100, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+myTween.tweenTime = 2
+task.wait(3)
+myTween:Play()
+
+while task.wait() do
+	print(myTween.num) -- update here
+end
