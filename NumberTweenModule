@@ -1,0 +1,44 @@
+local numtwn = {}
+local RunService = game:GetService("RunService")
+
+function numtwn.new(num, goal, style, dir)
+	local self = setmetatable({}, {__index = numtwn})
+	self.num = num
+	self.goal = goal
+	self.style = style or Enum.EasingStyle.Linear
+	self.dir = dir or Enum.EasingDirection.In
+	self.tweenTime = 1
+	self.alpha = 0
+	self.connection = nil
+	return self
+end
+
+function numtwn:Play()
+	if self.connection then self.connection:Disconnect() end
+
+	local startTime = tick()
+	local startValue = self.num
+	local change = self.goal - self.num
+
+	self.connection = RunService.RenderStepped:Connect(function()
+		local elapsedTime = tick() - startTime
+		local progress = math.clamp(elapsedTime / self.tweenTime, 0, 1)
+
+		self.num = game:GetService("TweenService"):GetValue(progress, self.style, self.dir) * change + startValue
+
+		if progress >= 1 then
+			self.num = self.goal
+			self.connection:Disconnect()
+			self.connection = nil
+		end
+	end)
+end
+
+function numtwn:Cancel()
+	if self.connection then
+		self.connection:Disconnect()
+		self.connection = nil
+	end
+end
+
+return numtwn
